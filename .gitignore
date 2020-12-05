@@ -1,0 +1,6 @@
+.idea/
+/tmp/
+dump.rdb
+.project
+.vscode
+config/b_config_local.go
