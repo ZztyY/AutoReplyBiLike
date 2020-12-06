@@ -11,4 +11,5 @@ func InitCron() {
 	_ = c.AddFunc("0 0-59/1 6-22 * * *", func() {
 
 	})
+	c.Start()
 }
