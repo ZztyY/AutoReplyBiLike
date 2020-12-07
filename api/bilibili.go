@@ -1,6 +1,7 @@
 package api
 
 import (
+	"AutoReplyBiLike/config"
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
@@ -17,7 +18,7 @@ type Like struct {
 func GetLikeCards(sess string) []int {
 	var cardIdList []int
 	var body map[string]interface{}
-	req, _ := http.NewRequest("GET", "https://api.bilibili.com/x/msgfeed/like", strings.NewReader(""))
+	req, _ := http.NewRequest("GET", config.BILIBILI_MSGFEED_LIKE, strings.NewReader(""))
 	sessData := http.Cookie{Name: "SESSDATA", Value: sess, Domain: "api.bilibili.com", HttpOnly: true}
 	req.AddCookie(&sessData)
 	resp, _ := http.DefaultClient.Do(req)
@@ -39,7 +40,7 @@ func GetLikeCards(sess string) []int {
 func GetLikeUserIds(cardId int, sess string) []Like {
 	var likeList []Like
 	var body map[string]interface{}
-	req, _ := http.NewRequest("GET", "https://api.bilibili.com/x/msgfeed/like_detail?card_id="+strconv.Itoa(cardId), strings.NewReader(""))
+	req, _ := http.NewRequest("GET", config.BILIBILI_LIKE_DETAIL+"?card_id="+strconv.Itoa(cardId), strings.NewReader(""))
 	sessData := http.Cookie{Name: "SESSDATA", Value: sess, Domain: "api.bilibili.com", HttpOnly: true}
 	req.AddCookie(&sessData)
 	resp, _ := http.DefaultClient.Do(req)
@@ -74,7 +75,7 @@ func SendMessage(receiverMid int, senderMid int, sess string, content string) er
 	r.Form.Add("msg[msg_type]", "1")
 	r.Form.Add("msg[content]", content)
 	bodyStr := strings.TrimSpace(r.Form.Encode())
-	req, _ := http.NewRequest("POST", "http://api.vc.bilibili.com/web_im/v1/web_im/send_msg", strings.NewReader(bodyStr))
+	req, _ := http.NewRequest("POST", config.BILIBILI_SEND_MESSAGE, strings.NewReader(bodyStr))
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	sessData := http.Cookie{Name: "SESSDATA", Value: sess, Domain: "api.bilibili.com", HttpOnly: true}
 	req.AddCookie(&sessData)
@@ -88,7 +89,7 @@ func SendMessage(receiverMid int, senderMid int, sess string, content string) er
 // 获取cookie对应账户mid
 func GetAccountMid(sess string) int {
 	var body map[string]interface{}
-	req, _ := http.NewRequest("GET", "http://api.bilibili.com/nav", strings.NewReader(""))
+	req, _ := http.NewRequest("GET", config.BILIBILI_NAV, strings.NewReader(""))
 	sessData := http.Cookie{Name: "SESSDATA", Value: sess, Domain: "api.bilibili.com", HttpOnly: true}
 	req.AddCookie(&sessData)
 	resp, err := http.DefaultClient.Do(req)
