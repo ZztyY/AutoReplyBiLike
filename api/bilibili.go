@@ -106,3 +106,25 @@ func GetAccountMid(sess string) int {
 	mid, _ := strconv.Atoi(string(midStr))
 	return mid
 }
+
+// 获取用户粉丝列表
+func GetFollowers(vMid int, sess string) []int {
+	var midList []int
+	var body map[string]interface{}
+	req, _ := http.NewRequest("GET", config.BILIBILI_GET_FOLLOWER+"?vmid="+strconv.Itoa(vMid), strings.NewReader(""))
+	sessData := http.Cookie{Name: "SESSDATA", Value: sess, Domain: "api.bilibili.com", HttpOnly: true}
+	req.AddCookie(&sessData)
+	resp, _ := http.DefaultClient.Do(req)
+	res, _ := ioutil.ReadAll(resp.Body)
+	err := json.Unmarshal(res, &body)
+	if err != nil {
+		panic(err)
+	}
+	list := body["data"].(map[string]interface{})["list"].([]interface{})
+	for _, k := range list {
+		midStr, _ := json.Marshal(k.(map[string]interface{})["mid"])
+		mid, _ := strconv.Atoi(string(midStr))
+		midList = append(midList, mid)
+	}
+	return midList
+}
