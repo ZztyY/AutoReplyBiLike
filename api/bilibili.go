@@ -84,3 +84,23 @@ func SendMessage(receiverMid int, senderMid int, sess string, content string) er
 	}
 	return nil
 }
+
+// 获取cookie对应账户mid
+func GetAccountMid(sess string) int {
+	var body map[string]interface{}
+	req, _ := http.NewRequest("GET", "http://api.bilibili.com/nav", strings.NewReader(""))
+	sessData := http.Cookie{Name: "SESSDATA", Value: sess, Domain: "api.bilibili.com", HttpOnly: true}
+	req.AddCookie(&sessData)
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		panic(err)
+	}
+	res, _ := ioutil.ReadAll(resp.Body)
+	err = json.Unmarshal(res, &body)
+	if err != nil {
+		panic(err)
+	}
+	midStr, _ := json.Marshal(body["data"].(map[string]interface{})["mid"])
+	mid, _ := strconv.Atoi(string(midStr))
+	return mid
+}
